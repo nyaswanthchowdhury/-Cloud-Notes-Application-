@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cloud Notes Application</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4facfe, #6a5acd);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* LOGIN / REGISTER */
+
+        .auth-box {
+            max-width: 450px;
+            margin: 80px auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #444;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 180px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #4facfe;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .register-btn {
+            background: #27ae60;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+        }
+
+        .edit-btn {
+            background: #f39c12;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+        }
+
+        .cancel-btn {
+            background: #777;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* MESSAGE */
+
+        .message {
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* DASHBOARD */
+
+        .topbar {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h1 {
+            margin-bottom: 5px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* NOTES */
+
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(280px, 1fr)
+            );
+
+            gap: 20px;
+        }
+
+        .note {
+            background: #fffef0;
+            border-left: 5px solid #4facfe;
+            padding: 20px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.1);
+        }
+
+        .note h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .note-date {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .note-content {
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .link {
+            color: #4facfe;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- ========================= -->
+    <!-- LOGIN PAGE -->
+    <!-- ========================= -->
+
+    <div id="loginPage" class="card auth-box">
+
+        <h1>☁️ Cloud Notes</h1>
+
+        <p>
+            Login to access your personal notes.
+        </p>
+
+        <div id="loginMessage"></div>
+
+        <label>Username</label>
+
+        <input
+            type="text"
+            id="loginUsername"
+            placeholder="Enter username"
+        >
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Enter password"
+        >
+
+        <button onclick="login()">
+            Login
+        </button>
+
+        <button
+            class="register-btn"
+            onclick="showRegister()"
+        >
+            Register
+        </button>
+
+        <p style="margin-top:20px;">
+            Demo account:
+            <b>admin</b> /
+            <b>123456</b>
+        </p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- REGISTER PAGE -->
+    <!-- ========================= -->
+
+    <div id="registerPage"
+         class="card auth-box hidden">
+
+        <h1>📝 Create Account</h1>
+
+        <p>
+            Create your Cloud Notes account.
+        </p>
+
+        <div id="registerMessage"></div>
+
+        <label>Username</label>
+
+        <input
+            type="text"
+            id="registerUsername"
+            placeholder="Create username"
+        >
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Create password"
+        >
+
+        <label>Confirm Password</label>
+
+        <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm password"
+        >
+
+        <button
+            class="register-btn"
+            onclick="registerUser()"
+        >
+            Create Account
+        </button>
+
+        <button onclick="showLogin()">
+            Back to Login
+        </button>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- DASHBOARD -->
+    <!-- ========================= -->
+
+    <div id="dashboardPage" class="hidden">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    ☁️ My Cloud Notes
+                </h1>
+
+                <p>
+                    Welcome,
+                    <b id="currentUser"></b>
+                </p>
+
+            </div>
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+
+        <!-- ADD NOTE -->
+
+        <div class="form-card">
+
+            <h2>
+                📝 Create New Note
+            </h2>
+
+            <label>
+                Note Title
+            </label>
+
+            <input
+                type="text"
+                id="noteTitle"
+                placeholder="Enter note title"
+            >
+
+            <label>
+                Note Content
+            </label>
+
+            <textarea
+                id="noteContent"
+                placeholder="Write your note here..."
+            ></textarea>
+
+            <button onclick="saveNote()">
+                Save Note
+            </button>
+
+            <button
+                id="cancelEdit"
+                class="cancel-btn hidden"
+                onclick="cancelEdit()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="form-card">
+
+            <h2>
+                🔍 Search Notes
+            </h2>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search notes..."
+                onkeyup="displayNotes()"
+            >
+
+        </div>
+
+
+        <!-- NOTES -->
+
+        <div class="form-card">
+
+            <h2>
+                📚 My Notes
+            </h2>
+
+            <div
+                id="notesContainer"
+                class="notes-container"
+            ></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+    // ==========================================
+    // DATA
+    // ==========================================
+
+    let users =
+        JSON.parse(
+            localStorage.getItem(
+                "cloudNotesUsers"
+            )
+        ) || [];
+
+
+    let notes =
+        JSON.parse(
+            localStorage.getItem(
+                "cloudNotesData"
+            )
+        ) || [];
+
+
+    let currentUser =
+        localStorage.getItem(
+            "cloudNotesCurrentUser"
+        );
+
+
+    let editingNoteId = null;
+
+
+    // ==========================================
+    // DEFAULT ADMIN USER
+    // ==========================================
+
+    if (users.length === 0) {
+
+        users.push({
+
+            username: "admin",
+
+            password: "123456"
+
+        });
+
+
+        localStorage.setItem(
+
+            "cloudNotesUsers",
+
+            JSON.stringify(users)
+
+        );
+
+    }
+
+
+    // ==========================================
+    // PAGE FUNCTIONS
+    // ==========================================
+
+    function showLogin() {
+
+        document
+            .getElementById("loginPage")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("registerPage")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("dashboardPage")
+            .classList.add("hidden");
+
+    }
+
+
+    function showRegister() {
+
+        document
+            .getElementById("loginPage")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("registerPage")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("dashboardPage")
+            .classList.add("hidden");
+
+    }
+
+
+    function showDashboard() {
+
+        document
+            .getElementById("loginPage")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("registerPage")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("dashboardPage")
+            .classList.remove("hidden");
+
+
+        document.getElementById(
+            "currentUser"
+        ).textContent = currentUser;
+
+
+        displayNotes();
+
+    }
+
+
+    // ==========================================
+    // REGISTER
+    // ==========================================
+
+    function registerUser() {
+
+        let username =
+            document
+                .getElementById(
+                    "registerUsername"
+                )
+                .value
+                .trim();
+
+
+        let password =
+            document
+                .getElementById(
+                    "registerPassword"
+                )
+                .value;
+
+
+        let confirmPassword =
+            document
+                .getElementById(
+                    "confirmPassword"
+                )
+                .value;
+
+
+        let message =
+            document.getElementById(
+                "registerMessage"
+            );
+
+
+        if (
+            username === "" ||
+            password === ""
+        ) {
+
+            message.innerHTML =
+                `
+                <div class="message error">
+                    Please fill all fields.
+                </div>
+                `;
+
+            return;
+        }
+
+
+        if (password.length < 6) {
+
+            message.innerHTML =
+                `
+                <div class="message error">
+                    Password must be at least
+                    6 characters.
+                </div>
+                `;
+
+            return;
+        }
+
+
+        if (
+            password !==
+            confirmPassword
+        ) {
+
+            message.innerHTML =
+                `
+                <div class="message error">
+                    Passwords do not match.
+                </div>
+                `;
+
+            return;
+        }
+
+
+        let exists =
+            users.find(
+                user =>
+                    user.username ===
+                    username
+            );
+
+
+        if (exists) {
+
+            message.innerHTML =
+                `
+                <div class="message error">
+                    Username already exists.
+                </div>
+                `;
+
+            return;
+        }
+
+
+        users.push({
+
+            username: username,
+
+            password: password
+
+        });
+
+
+        localStorage.setItem(
+
+            "cloudNotesUsers",
+
+            JSON.stringify(users)
+
+        );
+
+
+        message.innerHTML =
+            `
+            <div class="message">
+                Account created successfully!
+            </div>
+            `;
+
+
+        document.getElementById(
+            "registerUsername"
+        ).value = "";
+
+
+        document.getElementById(
+            "registerPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "confirmPassword"
+        ).value = "";
+
+
+        setTimeout(
+            showLogin,
+            1000
+        );
+
+    }
+
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+
+    function login() {
+
+        let username =
+            document
+                .getElementById(
+                    "loginUsername"
+                )
+                .value
+                .trim();
+
+
+        let password =
+            document
+                .getElementById(
+                    "loginPassword"
+                )
+                .value;
+
+
+        let message =
+            document.getElementById(
+                "loginMessage"
+            );
+
+
+        let user =
+            users.find(
+
+                user =>
+
+                    user.username ===
+                    username &&
+
+                    user.password ===
+                    password
+
+            );
+
+
+        if (!user) {
+
+            message.innerHTML =
+                `
+                <div class="message error">
+                    Invalid username or password.
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        currentUser =
+            username;
+
+
+        localStorage.setItem(
+
+            "cloudNotesCurrentUser",
+
+            currentUser
+
+        );
+
+
+        document.getElementById(
+            "loginUsername"
+        ).value = "";
+
+
+        document.getElementById(
+            "loginPassword"
+        ).value = "";
+
+
+        showDashboard();
+
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    function logout() {
+
+        currentUser = null;
+
+
+        localStorage.removeItem(
+
+            "cloudNotesCurrentUser"
+
+        );
+
+
+        showLogin();
+
+    }
+
+
+    // ==========================================
+    // SAVE NOTE
+    // ==========================================
+
+    function saveNote() {
+
+        let title =
+            document
+                .getElementById(
+                    "noteTitle"
+                )
+                .value
+                .trim();
+
+
+        let content =
+            document
+                .getElementById(
+                    "noteContent"
+                )
+                .value
+                .trim();
+
+
+        if (
+            title === "" ||
+            content === ""
+        ) {
+
+            alert(
+                "Please enter title and content."
+            );
+
+            return;
+
+        }
+
+
+        // EDIT NOTE
+
+        if (editingNoteId !== null) {
+
+            let note =
+                notes.find(
+                    item =>
+                        item.id ===
+                        editingNoteId
+                );
+
+
+            if (note) {
+
+                note.title =
+                    title;
+
+                note.content =
+                    content;
+
+                note.date =
+                    new Date()
+                        .toLocaleString();
+
+            }
+
+
+            editingNoteId = null;
+
+
+            document
+                .getElementById(
+                    "cancelEdit"
+                )
+                .classList
+                .add("hidden");
+
+
+        }
+
+        // NEW NOTE
+
+        else {
+
+            let newNote = {
+
+                id: Date.now(),
+
+                username:
+                    currentUser,
+
+                title:
+                    title,
+
+                content:
+                    content,
+
+                date:
+                    new Date()
+                        .toLocaleString()
+
+            };
+
+
+            notes.push(newNote);
+
+        }
+
+
+        localStorage.setItem(
+
+            "cloudNotesData",
+
+            JSON.stringify(notes)
+
+        );
+
+
+        document.getElementById(
+            "noteTitle"
+        ).value = "";
+
+
+        document.getElementById(
+            "noteContent"
+        ).value = "";
+
+
+        displayNotes();
+
+    }
+
+
+    // ==========================================
+    // DISPLAY NOTES
+    // ==========================================
+
+    function displayNotes() {
+
+        let container =
+            document.getElementById(
+                "notesContainer"
+            );
+
+
+        let search =
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value
+                .toLowerCase();
+
+
+        let userNotes =
+            notes.filter(
+
+                note =>
+                    note.username ===
+                    currentUser
+
+            );
+
+
+        if (search !== "") {
+
+            userNotes =
+                userNotes.filter(
+
+                    note =>
+
+                        note.title
+                            .toLowerCase()
+                            .includes(search)
+
+                        ||
+
+                        note.content
+                            .toLowerCase()
+                            .includes(search)
+
+                );
+
+        }
+
+
+        userNotes.reverse();
+
+
+        if (userNotes.length === 0) {
+
+            container.innerHTML =
+                `
+                <div class="empty">
+                    <h3>📭 No Notes Found</h3>
+
+                    <p>
+                        Create your first note
+                        above.
+                    </p>
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = "";
+
+
+        userNotes.forEach(
+
+            note => {
+
+                let noteElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                noteElement.className =
+                    "note";
+
+
+                noteElement.innerHTML = `
+
+                    <h3>
+                        ${escapeHTML(
+                            note.title
+                        )}
+                    </h3>
+
+                    <div class="note-date">
+
+                        📅 ${note.date}
+
+                    </div>
+
+                    <div class="note-content">
+
+                        ${escapeHTML(
+                            note.content
+                        )}
+
+                    </div>
+
+                    <button
+                        class="edit-btn"
+                        onclick="
+                            editNote(
+                                ${note.id}
+                            )
+                        "
+                    >
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="
+                            deleteNote(
+                                ${note.id}
+                            )
+                        "
+                    >
+                        🗑️ Delete
+                    </button>
+
+                `;
+
+
+                container.appendChild(
+                    noteElement
+                );
+
+            }
+
+        );
+
+    }
+
+
+    // ==========================================
+    // EDIT NOTE
+    // ==========================================
+
+    function editNote(id) {
+
+        let note =
+            notes.find(
+                item =>
+                    item.id === id
+            );
+
+
+        if (!note) {
+            return;
+        }
+
+
+        document.getElementById(
+            "noteTitle"
+        ).value =
+            note.title;
+
+
+        document.getElementById(
+            "noteContent"
+        ).value =
+            note.content;
+
+
+        editingNoteId =
+            id;
+
+
+        document
+            .getElementById(
+                "cancelEdit"
+            )
+            .classList
+            .remove("hidden");
+
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+        });
+
+    }
+
+
+    // ==========================================
+    // CANCEL EDIT
+    // ==========================================
+
+    function cancelEdit() {
+
+        editingNoteId =
+            null;
+
+
+        document.getElementById(
+            "noteTitle"
+        ).value = "";
+
+
+        document.getElementById(
+            "noteContent"
+        ).value = "";
+
+
+        document
+            .getElementById(
+                "cancelEdit"
+            )
+            .classList
+            .add("hidden");
+
+    }
+
+
+    // ==========================================
+    // DELETE NOTE
+    // ==========================================
+
+    function deleteNote(id) {
+
+        let confirmation =
+            confirm(
+                "Are you sure you want to delete this note?"
+            );
+
+
+        if (!confirmation) {
+            return;
+        }
+
+
+        notes =
+            notes.filter(
+                note =>
+                    note.id !== id
+            );
+
+
+        localStorage.setItem(
+
+            "cloudNotesData",
+
+            JSON.stringify(notes)
+
+        );
+
+
+        displayNotes();
+
+    }
+
+
+    // ==========================================
+    // SECURITY
+    // ==========================================
+
+    function escapeHTML(text) {
+
+        let div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.textContent =
+            text;
+
+
+        return div.innerHTML;
+
+    }
+
+
+    // ==========================================
+    // AUTO LOGIN
+    // ==========================================
+
+    if (currentUser) {
+
+        showDashboard();
+
+    } else {
+
+        showLogin();
+
+    }
+
+
+</script>
+
+</body>
+</html>
